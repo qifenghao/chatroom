@@ -8,11 +8,16 @@
     <!--
         <app-name> 在 sip-app_1_0.dtd 中没有定义，但必须要有才可以正常在 Restcomm Sip Servlets 中工作。
         <display-name>、<description> 不是必需的。
+        *** 猜测：<app-name> 是 Application Router 进行路由判断时，必须使用的。
     -->
     <app-name>ChatRoomServer</app-name>
     <display-name>ChatRoomServer</display-name>
     <description>ChatRoomServer</description>
 
+    <!--
+        Sip Servlet 和 Http Servlet 在注册时不可以使用相同的名字，即 sip.xml 和 web.xml 中的 <servlet-name> 不能相同。
+        不然，发起 Sip 请求时会报 404。
+    -->
     <servlet>
         <servlet-name>ChatRoomSipServlet</servlet-name>
         <servlet-class>my.qifeng.chatroom.sip.ChatRoomSipServlet</servlet-class>
@@ -22,7 +27,7 @@
         </init-param>
     </servlet>
 
-    <!-- 部署在 Restcomm Sip Servlets 中时，不需要 <servlet-mapping>，路由由 Application Routor 管理 -->
+    <!-- 部署在 Restcomm Sip Servlets 中时，不需要 <servlet-mapping>，路由由 Application Router 管理 -->
     <!--
     <servlet-mapping>
         <servlet-name>ChatRoomServlet</servlet-name>
