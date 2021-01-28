@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+<!DOCTYPE sip-app
+        PUBLIC "-//Java Community Process//DTD SIP Application 1.0//EN"
+        "http://www.jcp.org/dtd/sip-app_1_0.dtd">
+-->
+<sip-app>
+    <!--
+        <app-name> 在 sip-app_1_0.dtd 中没有定义，但必须要有才可以正常在 Restcomm Sip Servlets 中工作。
+        <display-name>、<description> 不是必需的。
+    -->
+    <app-name>ChatRoomServer</app-name>
+    <display-name>ChatRoomServer</display-name>
+    <description>ChatRoomServer</description>
+
+    <servlet>
+        <servlet-name>ChatRoomSipServlet</servlet-name>
+        <servlet-class>my.qifeng.chatroom.sip.ChatRoomSipServlet</servlet-class>
+        <init-param>
+            <param-name>dev2dev.chatroomserver.name</param-name>
+            <param-value>sip:QQlike@192.168.0.165:5080</param-value>
+        </init-param>
+    </servlet>
+
+    <!-- 部署在 Restcomm Sip Servlets 中时，不需要 <servlet-mapping>，路由由 Application Routor 管理 -->
+    <!--
+    <servlet-mapping>
+        <servlet-name>ChatRoomServlet</servlet-name>
+        <pattern>
+            <and>
+                <equal>
+                    <var>request.uri.user</var>
+                    <value>chatroomname</value>
+                </equal>
+                <equal>
+                    <var>request.method</var>
+                    <value>MESSAGE</value>
+                </equal>
+            </and>
+        </pattern>
+    </servlet-mapping>
+    -->
+</sip-app>
