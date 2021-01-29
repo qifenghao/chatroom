@@ -1,5 +1,8 @@
 package my.qifeng.chatroom.sip;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.ServletException;
 import javax.servlet.sip.*;
 import java.io.IOException;
@@ -9,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRoomSipServlet extends SipServlet {
+    private static final Logger logger = LoggerFactory.getLogger(ChatRoomSipServlet.class);
+
     /**
      *  Context attribute key to store user list.
      */
@@ -38,6 +43,7 @@ public class ChatRoomSipServlet extends SipServlet {
             throw new ServletException(e);
         }
         serverAddress = String.format("sip:%s@%s:%d", serverName, ip, serverPort);
+        logger.info("Chatroom Server Address: {}", serverAddress);
     }
 
     /**
@@ -61,6 +67,8 @@ public class ChatRoomSipServlet extends SipServlet {
 
         String message = request.getContent().toString();
         String from = request.getFrom().toString();
+
+        logger.info("message: {}, from: {}", message, from);
 
         // A user asked to quit.
         if("/quit".equalsIgnoreCase(message)) {
@@ -105,7 +113,7 @@ public class ChatRoomSipServlet extends SipServlet {
 
     @SuppressWarnings("unchecked")
     private void sendToAll(String from, String message) throws ServletParseException, IOException {
-        SipFactory factory = (SipFactory) getServletContext().getAttribute("javax.servlet.sip.SipFactory");
+        SipFactory factory = (SipFactory) getServletContext().getAttribute(SipServlet.SIP_FACTORY);
 
         // Send this message to all users.
         List<String> userList = (List<String>) getServletContext().getAttribute(CHATROOM_USER_LIST_KEY);
@@ -119,7 +127,7 @@ public class ChatRoomSipServlet extends SipServlet {
     }
 
     private void sendToUser(String to, String message) throws ServletParseException, IOException {
-        SipFactory factory = (SipFactory) getServletContext().getAttribute("javax.servlet.sip.SipFactory");
+        SipFactory factory = (SipFactory) getServletContext().getAttribute(SipServlet.SIP_FACTORY);
         SipApplicationSession session = factory.createApplicationSession();
         SipServletRequest request = factory.createRequest(session, "MESSAGE", serverAddress, to);
         request.setContent(message.getBytes(), "text/plain");
