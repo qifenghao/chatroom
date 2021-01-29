@@ -3,28 +3,47 @@ package my.qifeng.chatroom.sip;
 import javax.servlet.ServletException;
 import javax.servlet.sip.*;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class ChatRoomSipServlet extends SipServlet {
-    /** Context attribute key to store user list. */
-    public static String THE_LIST="dev2dev.chatroomserver.userList";
+    /**
+     *  Context attribute key to store user list.
+     */
+    public static final String CHATROOM_USER_LIST_KEY = "chatroom.userList";
 
-    /** Init parameter key to retrieve the chat room's address. */
-    public static String THE_NAME="dev2dev.chatroomserver.name";
+    public static final String CHATROOM_SERVER_NAME_KEY = "chatroomserver.name";
+    public static final String CHATROOM_SERVER_PORT_KEY = "chatroomserver.port";
 
-    /** This chat room server's address, retrieved from the init params. */
+    /**
+     *  This chat room server's address.
+     *  eg. sip:chatroomname@192.168.0.165:5080
+     */
     public String serverAddress;
 
-    /** This is called by the container when starting up the service. */
+    /**
+     *  This is called by the container when starting up the service.
+     */
     public void init() throws ServletException {
-        super.init();
-        getServletContext().setAttribute(THE_LIST,new ArrayList());
-        serverAddress = getServletConfig().getInitParameter(THE_NAME);
+        super.init(); // TODO Remove
+        getServletContext().setAttribute(CHATROOM_USER_LIST_KEY, new ArrayList());
+        String serverName = getServletConfig().getInitParameter(CHATROOM_SERVER_NAME_KEY);
+        int serverPort = Integer.parseInt(getServletConfig().getInitParameter(CHATROOM_SERVER_PORT_KEY));
+        String ip = null;
+        try {
+            ip = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException e) {
+            throw new ServletException(e);
+        }
+        serverAddress = String.format("sip:%s@%s:%d", serverName, ip, serverPort);
     }
 
-    /** This is called by the container when shutting down the service. */
+    /**
+     *  This is called by the container when shutting down the service.
+     */
     public void destroy() {
         try
         {
@@ -99,7 +118,7 @@ public class ChatRoomSipServlet extends SipServlet {
         SipFactory factory = (SipFactory)getServletContext().
                 getAttribute("javax.servlet.sip.SipFactory");
 
-        List list = (List)getServletContext().getAttribute(THE_LIST);
+        List list = (List)getServletContext().getAttribute(CHATROOM_USER_LIST_KEY);
         Iterator users = list.iterator();
         while (users.hasNext()) { //Send this message to all on the list.
             String user = (String) users.next();
@@ -126,17 +145,17 @@ public class ChatRoomSipServlet extends SipServlet {
     }
 
     private boolean containsUser(String from) {
-        List list = (List)getServletContext().getAttribute(THE_LIST);
+        List list = (List)getServletContext().getAttribute(CHATROOM_USER_LIST_KEY);
         return list.contains(from);
     }
 
     private void addUser(String from) {
-        List list = (List)getServletContext().getAttribute(THE_LIST);
+        List list = (List)getServletContext().getAttribute(CHATROOM_USER_LIST_KEY);
         list.add(from);
     }
 
     private void removeUser(String from) {
-        List list = (List)getServletContext().getAttribute(THE_LIST);
+        List list = (List)getServletContext().getAttribute(CHATROOM_USER_LIST_KEY);
         list.remove(from);
     }
 }

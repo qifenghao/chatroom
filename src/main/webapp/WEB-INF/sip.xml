@@ -22,8 +22,12 @@
         <servlet-name>ChatRoomSipServlet</servlet-name>
         <servlet-class>my.qifeng.chatroom.sip.ChatRoomSipServlet</servlet-class>
         <init-param>
-            <param-name>dev2dev.chatroomserver.name</param-name>
-            <param-value>sip:QQlike@192.168.0.165:5080</param-value>
+            <param-name>chatroomserver.name</param-name>
+            <param-value>QQlike</param-value>
+        </init-param>
+        <init-param>
+            <param-name>chatroomserver.port</param-name>
+            <param-value>5080</param-value>
         </init-param>
     </servlet>
 
