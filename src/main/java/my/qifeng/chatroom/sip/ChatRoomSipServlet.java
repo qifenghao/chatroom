@@ -27,7 +27,6 @@ public class ChatRoomSipServlet extends SipServlet {
      *  This is called by the container when starting up the service.
      */
     public void init() throws ServletException {
-        super.init(); // TODO Remove
         getServletContext().setAttribute(CHATROOM_USER_LIST_KEY, new ArrayList<String>());
         String serverName = getServletConfig().getInitParameter(CHATROOM_SERVER_NAME_KEY);
         int serverPort = Integer.parseInt(getServletConfig().getInitParameter(CHATROOM_SERVER_PORT_KEY));
@@ -51,7 +50,6 @@ public class ChatRoomSipServlet extends SipServlet {
             // Ignore all errors when shutting down.
             e.printStackTrace();
         }
-        super.destroy(); // TODO Remove
     }
 
     /**
@@ -91,7 +89,6 @@ public class ChatRoomSipServlet extends SipServlet {
      * regarding a sent message, including timeouts.
      */
     protected void doErrorResponse(SipServletResponse response) throws ServletException, IOException {
-        super.doErrorResponse(response); // TODO Remove
         // The receiver of the message probably dropped off. Remove the receiver from the list.
         String receiver = response.getTo().toString();
         removeUser(receiver);
@@ -102,7 +99,6 @@ public class ChatRoomSipServlet extends SipServlet {
      * received regarding a sent message.
      */
     protected void doSuccessResponse(SipServletResponse response) throws ServletException, IOException {
-        super.doSuccessResponse(response); // TODO Remove
         // We created the app session, we have to destroy it too.
         response.getApplicationSession().invalidate();
     }
