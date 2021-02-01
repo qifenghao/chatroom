@@ -14,6 +14,8 @@ import java.util.List;
 public class ChatRoomSipServlet extends SipServlet {
     private static final Logger logger = LoggerFactory.getLogger(ChatRoomSipServlet.class);
 
+    private SipFactory factory;
+
     /**
      *  Context attribute key to store user list.
      */
@@ -32,7 +34,9 @@ public class ChatRoomSipServlet extends SipServlet {
      *  This is called by the container when starting up the service.
      */
     public void init() throws ServletException {
+        factory = (SipFactory) getServletContext().getAttribute(SipServlet.SIP_FACTORY);
         getServletContext().setAttribute(CHATROOM_USER_LIST_KEY, new ArrayList<String>());
+
         String serverName = getServletConfig().getInitParameter(CHATROOM_SERVER_NAME_KEY);
         int serverPort = Integer.parseInt(getServletConfig().getInitParameter(CHATROOM_SERVER_PORT_KEY));
         String ip;
@@ -113,21 +117,14 @@ public class ChatRoomSipServlet extends SipServlet {
 
     @SuppressWarnings("unchecked")
     private void sendToAll(String from, String message) throws ServletParseException, IOException {
-        SipFactory factory = (SipFactory) getServletContext().getAttribute(SipServlet.SIP_FACTORY);
-
-        // Send this message to all users.
         List<String> userList = (List<String>) getServletContext().getAttribute(CHATROOM_USER_LIST_KEY);
         for (String user : userList) {
-            SipApplicationSession session = factory.createApplicationSession();
-            SipServletRequest request = factory.createRequest(session, "MESSAGE", serverAddress, user);
             String msg = from + " sent message: \n" + message;
-            request.setContent(msg.getBytes(), "text/plain");
-            request.send();
+            sendToUser(user, msg);
         }
     }
 
     private void sendToUser(String to, String message) throws ServletParseException, IOException {
-        SipFactory factory = (SipFactory) getServletContext().getAttribute(SipServlet.SIP_FACTORY);
         SipApplicationSession session = factory.createApplicationSession();
         SipServletRequest request = factory.createRequest(session, "MESSAGE", serverAddress, to);
         request.setContent(message.getBytes(), "text/plain");
